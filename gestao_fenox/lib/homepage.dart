@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'package:loginpage/backoffice.dart';
+import 'backoffice.dart';
 
 class LoginPage extends StatelessWidget {
+  final _usuariocontroller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,6 +29,7 @@ class LoginPage extends StatelessWidget {
               height: 20,
             ),
             TextFormField(
+              controller: _usuariocontroller,
               keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
                 labelText: "Usuário",
@@ -54,7 +57,12 @@ class LoginPage extends StatelessWidget {
                   fontSize: 20,
                 ),
               ),
-              style: TextStyle(fontSize: 20),
+              validator: (usuario) {
+                if (usuario == null || usuario.isEmpty) ;
+                {
+                  return 'Digite seu usuário aqui';
+                }
+              },
             ),
             SizedBox(
               height: 40,
