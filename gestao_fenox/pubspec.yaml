@@ -24,6 +24,7 @@ dependencies:
   flutter:
     sdk: flutter
     
+    
   
 
   # The following adds the Cupertino Icons font to your application.
@@ -36,7 +37,7 @@ dependencies:
   json_serializable: ^6.2.0
   controller: ^0.1.4
   json_annotation: ^4.5.0
-  validators: ^2.2.0
+  
 
 
 dev_dependencies:
@@ -92,3 +93,4 @@ flutter:
   - assets/fenox.png
   - assets/fenoxlogo3.png
   - assets/FenoxTec.png
+  - assets/FenoxTec2.png
