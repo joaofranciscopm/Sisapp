@@ -1,9 +1,17 @@
+import 'dart:convert';
+
+import 'package:controller/controller.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'backoffice.dart';
 
 class LoginPage extends StatelessWidget {
-  final _usuariocontroller = TextEditingController();
+  final _emailocontroller = TextEditingController();
+  final _senhacontroller = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  var http;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +37,7 @@ class LoginPage extends StatelessWidget {
               height: 20,
             ),
             TextFormField(
-              controller: _usuariocontroller,
+              controller: _emailocontroller,
               keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
                 labelText: "Usuário",
@@ -39,14 +47,22 @@ class LoginPage extends StatelessWidget {
                   fontSize: 20,
                 ),
               ),
-              style: TextStyle(
-                fontSize: 20,
-              ),
+              validator: (Usuario) {
+                if (Usuario == null || Usuario.isEmpty) {
+                  return 'Por favor, preencher a senha';
+                } else if (!RegExp(
+                        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                    .hasMatch(_emailocontroller.text)) {
+                  return 'Por favor, digitar Usuário correto';
+                }
+                return null;
+              },
             ),
             SizedBox(
               height: 10,
             ),
             TextFormField(
+              controller: _senhacontroller,
               keyboardType: TextInputType.text,
               obscureText: true,
               decoration: InputDecoration(
@@ -57,11 +73,13 @@ class LoginPage extends StatelessWidget {
                   fontSize: 20,
                 ),
               ),
-              validator: (usuario) {
-                if (usuario == null || usuario.isEmpty) ;
-                {
-                  return 'Digite seu usuário aqui';
+              validator: (senha) {
+                if (senha == null || senha.isEmpty) {
+                  return 'Por favor, preencher a senha';
+                } else if (senha.length < 6) {
+                  return 'Po favor, digite a senha correta';
                 }
+                return null;
               },
             ),
             SizedBox(
@@ -106,12 +124,22 @@ class LoginPage extends StatelessWidget {
                       ),
                     ],
                   ),
-                  onPressed: () => {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => BackOffice(),
-                        )),
+                  onPressed: () async {
+                    FocusScopeNode currentFocus = FocusScope.of(context);
+                    if (_formKey.currentState.validate()) {
+                      bool deucerto = await Login();
+                      if (!currentFocus.hasPrimaryFocus) {
+                        currentFocus.unfocus();
+                      }
+                      if (deucerto) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BackOffice(),
+                          ),
+                        );
+                      }
+                    }
                   },
                 ),
               ),
@@ -126,5 +154,24 @@ class LoginPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<bool> Login() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var url = Uri.parse('https://backoffice.fenoxapp.com.br');
+    var resposta = await http.prost(
+      url,
+      body: {
+        'username': _emailocontroller.text,
+        'senha': _senhacontroller.text,
+      },
+    );
+    if (resposta.statusCode == 200) {
+      print(jsonDecode(resposta.body)['token']);
+      return true;
+    } else {
+      print(jsonDecode(resposta.body));
+      return false;
+    }
   }
 }

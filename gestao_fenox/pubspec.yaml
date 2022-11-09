@@ -37,6 +37,9 @@ dependencies:
   json_serializable: ^6.2.0
   controller: ^0.1.4
   json_annotation: ^4.5.0
+  shared_preferences: ^2.0.15
+  http: ^0.13.5
+  
   
 
 
