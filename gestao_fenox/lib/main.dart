@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
         home: LoginPage(),
-        initialRoute: 'home_page',
+        initialRoute: 'homepage',
         routes: {
           "/backoffice": (context) => BackOffice(),
         });
