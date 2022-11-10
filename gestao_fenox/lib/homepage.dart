@@ -1,14 +1,18 @@
 import 'dart:convert';
-
-import 'package:controller/controller.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'backoffice.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   final _emailocontroller = TextEditingController();
+
   final _senhacontroller = TextEditingController();
+
   final _formKey = GlobalKey<FormState>();
 
   var http;
@@ -16,7 +20,8 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
+      body: 
+      Container(
         padding: EdgeInsets.only(
           top: 60,
           left: 40,
@@ -36,6 +41,7 @@ class LoginPage extends StatelessWidget {
             SizedBox(
               height: 20,
             ),
+            
             TextFormField(
               controller: _emailocontroller,
               keyboardType: TextInputType.emailAddress,
@@ -126,7 +132,7 @@ class LoginPage extends StatelessWidget {
                   ),
                   onPressed: () async {
                     FocusScopeNode currentFocus = FocusScope.of(context);
-                    if (_formKey.currentState.validate()) {
+                    if (_formKey.currentState!.validate()) {
                       bool deucerto = await Login();
                       if (!currentFocus.hasPrimaryFocus) {
                         currentFocus.unfocus();
@@ -139,22 +145,27 @@ class LoginPage extends StatelessWidget {
                           ),
                         );
                       }
+                    } else {
+                      _senhacontroller.clear();
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     }
                   },
                 ),
               ),
             ),
-            SizedBox(
-              height: 10,
-            ),
-            SizedBox(
-              height: 10,
-            ),
+        
           ],
         ),
       ),
     );
   }
+
+  final snackBar = SnackBar(
+      content: Text(
+        'Usuario ou senha invalida',
+        textAlign: TextAlign.center,
+      ),
+      backgroundColor: Color.fromARGB(255, 255, 3, 3));
 
   Future<bool> Login() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
