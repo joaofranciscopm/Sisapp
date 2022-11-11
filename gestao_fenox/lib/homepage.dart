@@ -1,188 +1,37 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'backoffice.dart';
 
 class LoginPage extends StatefulWidget {
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _emailocontroller = TextEditingController();
+  final formkey = GlobalKey<FormState>();
 
-  final _senhacontroller = TextEditingController();
+  final emailController = TextEditingController();
 
-  final _formKey = GlobalKey<FormState>();
+  final senhaController = TextEditingController();
 
-  var http;
+  @override
+  void dispose() {
+    emailController.dispose();
+    senhaController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: 
-      Container(
-        padding: EdgeInsets.only(
-          top: 60,
-          left: 40,
-          right: 40,
+        body: Form(
+            child: Column(
+      children: [
+        TextFormField(
+          decoration: InputDecoration(labelText: 'Usuário'),
         ),
-        color: Color.fromARGB(255, 255, 255, 255),
-        child: ListView(
-          children: <Widget>[
-            SizedBox(
-              width: 128,
-              height: 128,
-              child: Image.asset("assets/FenoxTec2.png"),
-            ),
-            SizedBox(
-              height: 30,
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            
-            TextFormField(
-              controller: _emailocontroller,
-              keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(
-                labelText: "Usuário",
-                labelStyle: TextStyle(
-                  color: Colors.black38,
-                  fontWeight: FontWeight.w400,
-                  fontSize: 20,
-                ),
-              ),
-              validator: (Usuario) {
-                if (Usuario == null || Usuario.isEmpty) {
-                  return 'Por favor, preencher a senha';
-                } else if (!RegExp(
-                        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                    .hasMatch(_emailocontroller.text)) {
-                  return 'Por favor, digitar Usuário correto';
-                }
-                return null;
-              },
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            TextFormField(
-              controller: _senhacontroller,
-              keyboardType: TextInputType.text,
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: "Senha",
-                labelStyle: TextStyle(
-                  color: Colors.black38,
-                  fontWeight: FontWeight.w400,
-                  fontSize: 20,
-                ),
-              ),
-              validator: (senha) {
-                if (senha == null || senha.isEmpty) {
-                  return 'Por favor, preencher a senha';
-                } else if (senha.length < 6) {
-                  return 'Po favor, digite a senha correta';
-                }
-                return null;
-              },
-            ),
-            SizedBox(
-              height: 40,
-            ),
-            Container(
-              height: 60,
-              alignment: Alignment.centerLeft,
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    stops: [0.3, 1],
-                    colors: [
-                      Color.fromARGB(255, 0, 0, 0),
-                      Color.fromARGB(255, 255, 254, 254),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(5),
-                  )),
-              child: SizedBox.expand(
-                child: ElevatedButton(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        "Entrar",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 255, 255, 255),
-                          fontSize: 20,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      Container(
-                        child: SizedBox(
-                          child: Image.asset("assets/fenoxlogo3.png"),
-                          height: 40,
-                          width: 40,
-                        ),
-                      ),
-                    ],
-                  ),
-                  onPressed: () async {
-                    FocusScopeNode currentFocus = FocusScope.of(context);
-                    if (_formKey.currentState!.validate()) {
-                      bool deucerto = await Login();
-                      if (!currentFocus.hasPrimaryFocus) {
-                        currentFocus.unfocus();
-                      }
-                      if (deucerto) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BackOffice(),
-                          ),
-                        );
-                      }
-                    } else {
-                      _senhacontroller.clear();
-                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                    }
-                  },
-                ),
-              ),
-            ),
-        
-          ],
-        ),
-      ),
-    );
-  }
-
-  final snackBar = SnackBar(
-      content: Text(
-        'Usuario ou senha invalida',
-        textAlign: TextAlign.center,
-      ),
-      backgroundColor: Color.fromARGB(255, 255, 3, 3));
-
-  Future<bool> Login() async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    var url = Uri.parse('https://backoffice.fenoxapp.com.br');
-    var resposta = await http.prost(
-      url,
-      body: {
-        'username': _emailocontroller.text,
-        'senha': _senhacontroller.text,
-      },
-    );
-    if (resposta.statusCode == 200) {
-      print(jsonDecode(resposta.body)['token']);
-      return true;
-    } else {
-      print(jsonDecode(resposta.body));
-      return false;
-    }
+        TextFormField(
+          decoration: InputDecoration(labelText: 'Senha'),
+        )
+      ],
+    )));
   }
 }
